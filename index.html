@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>PAXG Karar & Portföy Kokpiti</title>
+  <meta name="theme-color" content="#0b1120" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="PAXG Kokpit" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brandNavy: '#18274A',
+            brandOcean: '#31B7BC',
+            bgDark: '#070b14',
+            cardDark: 'rgba(15, 23, 42, 0.75)',
+            cardBorder: 'rgba(255, 255, 255, 0.08)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #070b14;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(24, 39, 74, 0.4) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(49, 183, 188, 0.12) 0px, transparent 50%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    .badge-pulse {
+      animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.15); }
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen p-3 sm:p-6 flex flex-col items-center">
+  <div class="w-full max-w-4xl space-y-4">
+    
+    <!-- TOP HEADER & LIVE BINANCE STATUS -->
+    <header class="flex flex-wrap items-center justify-between gap-3 p-4 bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-xl shadow-lg shadow-amber-500/20">
+          🪙
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            PAXG / USDT Portföy Kokpiti
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-mono">PAPI Cross 10x</span>
+          </h1>
+          <p class="text-xs text-slate-400">Binance Futures Canlı Pozisyon & LIFO Dalga Simülatörü</p>
+        </div>
+      </div>
+
+      <!-- Live Price Box -->
+      <div class="flex items-center gap-3 bg-black/40 border border-white/10 px-3.5 py-2 rounded-xl">
+        <div class="text-right">
+          <div class="text-[10px] text-slate-400 uppercase tracking-wider flex items-center justify-end gap-1.5">
+            <span id="connDot" class="w-2 h-2 rounded-full bg-emerald-400 badge-pulse"></span>
+            Canlı Fiyat
+          </div>
+          <div id="livePrice" class="font-mono text-lg font-extrabold text-amber-400">3,795.14 $</div>
+        </div>
+        <div class="text-right border-l border-white/10 pl-3">
+          <div class="text-[10px] text-slate-400">24s Değişim</div>
+          <div id="liveChange" class="font-mono text-xs font-semibold text-rose-400">-1.96%</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- KEY POSITION METRICS -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="p-3.5 bg-slate-900/70 border border-white/10 rounded-xl">
+        <div class="text-[11px] text-slate-400">Toplam Pozisyon</div>
+        <div class="font-mono text-base font-bold text-white mt-0.5">6.000 PAXG</div>
+        <div class="text-[10px] text-cyan-400 mt-1">Giriş: 4,278.06 $</div>
+      </div>
+
+      <div class="p-3.5 bg-slate-900/70 border border-white/10 rounded-xl">
+        <div class="text-[11px] text-slate-400">Canlı Kasa Başabaş</div>
+        <div class="font-mono text-base font-bold text-cyan-400 mt-0.5">4,278.92 $</div>
+        <div class="text-[10px] text-emerald-400 mt-1">Eski: <strike class="text-slate-500">4,622$</strike> ▼ 343$</div>
+      </div>
+
+      <div class="p-3.5 bg-slate-900/70 border border-white/10 rounded-xl">
+        <div class="text-[11px] text-slate-400">Likidasyon Fiyatı</div>
+        <div class="font-mono text-base font-bold text-emerald-400 mt-0.5">2,444.81 $</div>
+        <div class="text-[10px] text-slate-400 mt-1">Mesafe: %35.6 Güvenli</div>
+      </div>
+
+      <div class="p-3.5 bg-slate-900/70 border border-white/10 rounded-xl">
+        <div class="text-[11px] text-slate-400">Marjin Oranı (UniMMR)</div>
+        <div class="font-mono text-base font-bold text-emerald-400 mt-0.5">21.58 %</div>
+        <div class="text-[10px] text-emerald-400 mt-1">Sağlık: Mükemmel</div>
+      </div>
+    </div>
+
+    <!-- ACTIVE TAKE-PROFIT LIMIT ORDERS -->
+    <div class="p-4 bg-slate-900/70 border border-white/10 rounded-2xl space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+          <span>🎯 Aktif Kâr Realizasyonu (Limit Satış) Emirleri</span>
+        </h2>
+        <span class="text-[11px] text-emerald-400 font-mono">reduceOnly: true</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- Order 1 -->
+        <div class="p-3 bg-black/40 border border-emerald-500/20 rounded-xl flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">1. HEDEF</span>
+              <span class="font-mono font-bold text-white text-sm">3,940.00 $</span>
+            </div>
+            <div class="text-xs text-slate-400 mt-1">Miktar: <strong class="text-slate-200">1.000 PAXG</strong> (Dip Pususu Kârı)</div>
+          </div>
+          <div class="text-right">
+            <div class="font-mono font-bold text-emerald-400 text-sm">+155.00 $</div>
+            <div class="text-[10px] text-slate-500">Kâr Hedefi</div>
+          </div>
+        </div>
+
+        <!-- Order 2 -->
+        <div class="p-3 bg-black/40 border border-cyan-500/20 rounded-xl flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-bold">2. HEDEF</span>
+              <span class="font-mono font-bold text-white text-sm">4,085.00 $</span>
+            </div>
+            <div class="text-xs text-slate-400 mt-1">Miktar: <strong class="text-slate-200">1.319 PAXG</strong> (Dalga Turu)</div>
+          </div>
+          <div class="text-right">
+            <div class="font-mono font-bold text-cyan-400 text-sm">+276.99 $</div>
+            <div class="text-[10px] text-slate-500">Kâr Hedefi</div>
+          </div>
+        </div>
+      </div>
+      <p class="text-[11px] text-slate-400 italic">
+        * Bu iki emir gerçekleştiğinde toplam <strong>+431.99 $ kâr</strong> kasaya geçer, pozisyon güvenli <strong>3.681 PAXG</strong> seviyesine iner ve başabaş 4,200$ altına çekilir.
+      </p>
+    </div>
+
+    <!-- WHAT-IF LIFO WAVE SIMULATOR -->
+    <div class="p-4 bg-slate-900/70 border border-white/10 rounded-2xl space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-white/10">
+        <div>
+          <h2 class="text-sm font-bold text-white">⚡ LIFO Dalga & What-If Simülatörü</h2>
+          <p class="text-xs text-slate-400">Fiyat hareket ettikçe net PnL ve başabaş değişimini simüle edin</p>
+        </div>
+        <div class="flex gap-2">
+          <button id="btnPlay" class="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs transition">
+            ▶ Animasyon Başlat
+          </button>
+          <button id="btnReset" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition">
+            ↺ Sıfırla
+          </button>
+        </div>
+      </div>
+
+      <!-- Sliders -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-black/30 p-3.5 rounded-xl border border-white/5">
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span class="text-slate-400">Simüle Edilen Altın Fiyatı:</span>
+            <span id="lblSimPrice" class="font-mono font-bold text-amber-400 text-sm">3,800 $</span>
+          </div>
+          <input id="rngPrice" type="range" min="3400" max="4500" step="10" value="3800" class="w-full accent-cyan-400 cursor-pointer" />
+          <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+            <span>3,400$</span>
+            <span>3,785$ (Dip)</span>
+            <span>3,940$ (TP1)</span>
+            <span>4,085$ (TP2)</span>
+            <span>4,500$</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span class="text-slate-400">3,875$ ⇄ 4,085$ LIFO Tur Sayısı:</span>
+            <span id="lblCycles" class="font-mono font-bold text-emerald-400 text-sm">0 Tur</span>
+          </div>
+          <input id="rngCycles" type="range" min="0" max="5" step="1" value="0" class="w-full accent-emerald-400 cursor-pointer" />
+          <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+            <span>0</span>
+            <span>1 (+277$)</span>
+            <span>2 (+554$)</span>
+            <span>3 (+831$)</span>
+            <span>5 (+1,385$)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart & Live Result Card -->
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-stretch">
+        <div class="sm:col-span-7 bg-black/40 border border-white/5 rounded-xl p-2.5">
+          <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+            <span>Dalga Yolu & Başabaş Düşüş Çizgisi</span>
+            <span id="animText" class="text-cyan-400 font-mono text-[10px]">Slider'ı hareket ettirin</span>
+          </div>
+          <canvas id="waveCanvas" width="460" height="170" class="w-full h-[170px] rounded"></canvas>
+        </div>
+
+        <div class="sm:col-span-5 flex flex-col justify-between gap-2">
+          <div class="p-3 bg-black/40 border border-white/5 rounded-xl">
+            <div class="text-[11px] text-slate-400">Yeni Kasa Başabaş:</div>
+            <div id="simRealBE" class="font-mono text-base font-bold text-cyan-400 mt-0.5">4,278.92 $</div>
+            <div id="simSaved" class="text-[10px] text-emerald-400 mt-0.5">▼ 343$ Aşağı İndi</div>
+          </div>
+
+          <div class="p-3 bg-black/40 border border-white/5 rounded-xl">
+            <div class="text-[11px] text-slate-400">Seçili Fiyatta Net Kasa PnL:</div>
+            <div id="simNetPnl" class="font-mono text-base font-bold text-rose-400 mt-0.5">-2,868.00 $</div>
+            <div id="simPosSize" class="text-[10px] text-slate-400 mt-0.5">Aktif Pozisyon: 6.000 PAXG</div>
+          </div>
+
+          <div class="p-2.5 bg-black/40 border border-white/5 rounded-xl text-[11px] space-y-1">
+            <div class="text-slate-400">Kıyaslama:</div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">• Bekleme (LIFO'suz):</span>
+              <span id="cmpHold" class="font-mono text-rose-400">-2,868$</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">• LIFO Dalga Kârıyla:</span>
+              <span id="cmpLifo" class="font-mono text-cyan-400 font-semibold">-2,868$</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="text-center text-[11px] text-slate-500 py-3">
+      Ceyhun Özgür Gönül &mdash; Kişisel Portföy & LIFO Karar Sistemi &bull; 
+      <a href="https://github.com/ceygon/paxg-cockpit" target="_blank" class="text-cyan-400 hover:underline">GitHub Reposu</a>
+    </footer>
+
+  </div>
+
+  <script>
+    // Live Binance WebSocket
+    let currentLivePrice = 3795.14;
+    const livePriceEl = document.getElementById('livePrice');
+    const liveChangeEl = document.getElementById('liveChange');
+    const connDot = document.getElementById('connDot');
+
+    function connectBinanceWs() {
+      try {
+        const ws = new WebSocket('wss://fstream.binance.com/ws/paxgusdt@ticker');
+        ws.onopen = () => {
+          connDot.classList.remove('bg-rose-500');
+          connDot.classList.add('bg-emerald-400');
+        };
+        ws.onmessage = (e) => {
+          const d = JSON.parse(e.data);
+          if (d.c) {
+            currentLivePrice = parseFloat(d.c);
+            livePriceEl.textContent = currentLivePrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+            const chg = parseFloat(d.P);
+            liveChangeEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+            liveChangeEl.className = 'font-mono text-xs font-semibold ' + (chg >= 0 ? 'text-emerald-400' : 'text-rose-400');
+          }
+        };
+        ws.onerror = () => fallbackRest();
+        ws.onclose = () => setTimeout(connectBinanceWs, 5000);
+      } catch (err) {
+        fallbackRest();
+      }
+    }
+
+    async function fallbackRest() {
+      try {
+        const res = await fetch('https://fapi.binance.com/fapi/v1/ticker/price?symbol=PAXGUSDT');
+        const data = await res.json();
+        if (data.price) {
+          currentLivePrice = parseFloat(data.price);
+          livePriceEl.textContent = currentLivePrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+        }
+      } catch (e) {}
+    }
+
+    connectBinanceWs();
+    setInterval(fallbackRest, 10000);
+
+    // Simulator Elements
+    const rngPrice = document.getElementById('rngPrice');
+    const rngCycles = document.getElementById('rngCycles');
+    const lblSimPrice = document.getElementById('lblSimPrice');
+    const lblCycles = document.getElementById('lblCycles');
+    const simRealBE = document.getElementById('simRealBE');
+    const simSaved = document.getElementById('simSaved');
+    const simNetPnl = document.getElementById('simNetPnl');
+    const simPosSize = document.getElementById('simPosSize');
+    const cmpHold = document.getElementById('cmpHold');
+    const cmpLifo = document.getElementById('cmpLifo');
+    const btnPlay = document.getElementById('btnPlay');
+    const btnReset = document.getElementById('btnReset');
+    const animText = document.getElementById('animText');
+    const canvas = document.getElementById('waveCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const BASE_SIZE = 6.000;
+    const BASE_ENTRY = 4278.0615;
+    const BASE_FEES = 5.67; // current debt / funding
+    const PROFIT_PER_CYCLE = 276.99; // 1.319 * (4085 - 3875)
+
+    let animTimer = null;
+    let animStep = 0;
+
+    const keyframes = [
+      [3800, 0, "1. Durum: 6.000 PAXG pozisyon beklemede (3,800$)"],
+      [3940, 0, "🎯 1. Hedef Vuruldu (3,940$): 1.000 PAXG kapandı, +155$ kâr alındı!"],
+      [4085, 1, "🎯 2. Hedef Vuruldu (4,085$): 1.319 PAXG kapandı, +277$ kâr cebe!"],
+      [3950, 1, "Piyasa düzeltme yapıyor -> 3,950$ (Pozisyon güvenli 3.681 PAXG)"],
+      [4085, 2, "🎯 Yeni Tur Kârı: Toplam kâr +554$! Başabaş 4,180$'a indi!"],
+      [4200, 3, "🏁 4,200$: Eski 4,278$ girişine varmadan TAM BAŞABAŞ KÂRLI ÇIKIŞ!"]
+    ];
+
+    function updateSim() {
+      const price = parseFloat(rngPrice.value);
+      const cycles = parseInt(rngCycles.value, 10);
+      const bankedProfit = cycles * PROFIT_PER_CYCLE;
+
+      lblSimPrice.textContent = price.toLocaleString('en-US') + ' $';
+      lblCycles.textContent = cycles + ' Tur (+' + Math.round(bankedProfit) + '$)';
+
+      // Calculate state
+      let activeSize = BASE_SIZE;
+      let totalCost = BASE_SIZE * BASE_ENTRY;
+      if (cycles >= 1) {
+        activeSize -= 1.319;
+        totalCost -= (1.319 * 3875);
+      }
+      if (price >= 3940) {
+        activeSize -= 1.000;
+        totalCost -= 3785;
+      }
+
+      const avgEntry = totalCost / activeSize;
+      const realBE = avgEntry - (bankedProfit / activeSize);
+      const unrealized = (price - avgEntry) * activeSize;
+      const netCashPnl = unrealized + bankedProfit;
+
+      const holdPnl = (price - BASE_ENTRY) * BASE_SIZE;
+
+      simRealBE.textContent = realBE.toFixed(2) + ' $';
+      const saved = BASE_ENTRY - realBE;
+      simSaved.textContent = '▼ ' + Math.round(saved) + '$ Aşağı İndi';
+
+      simNetPnl.textContent = (netCashPnl >= 0 ? '+' : '') + netCashPnl.toFixed(0) + ' $';
+      simNetPnl.className = 'font-mono text-base font-bold mt-0.5 ' + (netCashPnl >= 0 ? 'text-emerald-400' : 'text-rose-400');
+
+      simPosSize.textContent = 'Aktif Pozisyon: ' + activeSize.toFixed(3) + ' PAXG';
+
+      cmpHold.textContent = (holdPnl >= 0 ? '+' : '') + Math.round(holdPnl) + ' $';
+      cmpLifo.textContent = (netCashPnl >= 0 ? '+' : '') + Math.round(netCashPnl) + ' $';
+
+      drawChart(price, realBE);
+    }
+
+    function drawChart(curPrice, realBE) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const W = canvas.width;
+      const H = canvas.height;
+      const minP = 3500;
+      const maxP = 4400;
+      const yOf = (p) => H - 18 - ((p - minP) / (maxP - minP)) * (H - 32);
+
+      const refs = [
+        { p: 4278, label: 'Giriş Başabaş (4,278$)', color: '#ef4444', dash: [3, 3] },
+        { p: realBE, label: 'Yeni Başabaş (' + Math.round(realBE) + '$)', color: '#31B7BC', dash: [] },
+        { p: 4085, label: 'TP2 (4,085$)', color: '#10B981', dash: [4, 2] },
+        { p: 3940, label: 'TP1 (3,940$)', color: '#10B981', dash: [4, 2] },
+        { p: 3785, label: 'Dip Alış (3,785$)', color: '#64748b', dash: [2, 2] }
+      ];
+
+      ctx.font = '10px monospace';
+      refs.forEach(r => {
+        const y = yOf(r.p);
+        ctx.beginPath();
+        ctx.setLineDash(r.dash);
+        ctx.strokeStyle = r.color;
+        ctx.lineWidth = r.p === realBE ? 2 : 1;
+        ctx.moveTo(10, y);
+        ctx.lineTo(W - 10, y);
+        ctx.stroke();
+        ctx.fillStyle = r.color;
+        ctx.fillText(r.label, 14, y - 3);
+      });
+      ctx.setLineDash([]);
+
+      // Draw wave path
+      const pts = [
+        [20, 4278],
+        [90, 3785],
+        [170, 3940],
+        [250, 4085],
+        [330, 3950],
+        [430, curPrice]
+      ];
+      ctx.beginPath();
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 2;
+      pts.forEach((pt, idx) => {
+        const x = pt[0];
+        const y = yOf(pt[1]);
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Current Price marker
+      const cy = yOf(curPrice);
+      ctx.beginPath();
+      ctx.arc(430, cy, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#31B7BC';
+      ctx.fill();
+    }
+
+    rngPrice.addEventListener('input', updateSim);
+    rngCycles.addEventListener('input', updateSim);
+
+    btnPlay.addEventListener('click', () => {
+      if (animTimer) {
+        clearInterval(animTimer);
+        animTimer = null;
+        btnPlay.textContent = '▶ Animasyon Başlat';
+        return;
+      }
+      animStep = 0;
+      btnPlay.textContent = '⏸ Duraklat';
+      const runFrame = () => {
+        const kf = keyframes[animStep];
+        rngPrice.value = kf[0];
+        rngCycles.value = kf[1];
+        animText.textContent = kf[2];
+        updateSim();
+        animStep++;
+        if (animStep >= keyframes.length) {
+          clearInterval(animTimer);
+          animTimer = null;
+          btnPlay.textContent = '▶ Tekrar Oynat';
+        }
+      };
+      runFrame();
+      animTimer = setInterval(runFrame, 1800);
+    });
+
+    btnReset.addEventListener('click', () => {
+      if (animTimer) {
+        clearInterval(animTimer);
+        animTimer = null;
+        btnPlay.textContent = '▶ Animasyon Başlat';
+      }
+      rngPrice.value = 3800;
+      rngCycles.value = 0;
+      animText.textContent = 'Canlı duruma sıfırlandı';
+      updateSim();
+    });
+
+    updateSim();
+  </script>
+</body>
+</html>
